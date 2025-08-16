@@ -1,0 +1,483 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #000000;
+  color: white;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  padding: 2rem;
+  background: #000000;
+}
+
+/* Mood-specific backgrounds */
+.app.happy {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 193, 7, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 87, 34, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 235, 59, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+    animation: happyPulse 4s ease-in-out infinite;
+}
+
+.app.sad {
+  background: 
+    radial-gradient(circle at 30% 70%, rgba(75, 75, 75, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(50, 50, 70, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(30, 30, 50, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #2d3436 0%, #636e72 50%, #2d3436 100%);
+}
+
+.app.energetic {
+  background: 
+    radial-gradient(circle at 25% 75%, rgba(255, 94, 77, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 75% 25%, rgba(255, 154, 0, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255, 206, 84, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.app.relaxed {
+  background: 
+    radial-gradient(circle at 40% 60%, rgba(103, 58, 183, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 60% 40%, rgba(33, 150, 243, 0.25) 0%, transparent 50%),
+    linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.app.fun {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(233, 30, 99, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(156, 39, 176, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 50% 10%, rgba(103, 58, 183, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.app.angry {
+  background: 
+    radial-gradient(circle at 30% 70%, rgba(244, 67, 54, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(255, 87, 34, 0.25) 0%, transparent 50%),
+    linear-gradient(135deg, #ff8a80 0%, #ff5722 100%);
+}
+
+.app.neutral {
+  background: 
+    radial-gradient(circle at 50% 50%, rgba(245, 222, 179, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(238, 203, 173, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(222, 184, 135, 0.15) 0%, transparent 50%),
+    linear-gradient(135deg, #f5deb3 0%, #deb887 50%, #f5deb3 100%);
+
+}
+
+.app.surprise {
+  background: 
+    radial-gradient(circle at 25% 75%, rgba(76, 175, 80, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 75% 25%, rgba(255, 193, 7, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(156, 39, 176, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+}
+
+/* Floating particles */
+.floating-particle {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float 12s ease-in-out infinite;
+  z-index: 101;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+  25% { transform: translateY(-30px) translateX(15px) rotate(90deg); }
+  50% { transform: translateY(0px) translateX(-15px) rotate(180deg); }
+  75% { transform: translateY(30px) translateX(10px) rotate(270deg); }
+}
+
+/* Main content container */
+.main-content {
+  max-width: 800px;
+  width: 100%;
+  z-index: 2;
+  position: relative;
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.main-content.hidden {
+  opacity: 0;
+  transform: translateY(-50px);
+  pointer-events: none;
+}
+
+/* Title */
+.title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff, #f0f0f0, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-bottom: 3rem;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+/* Mood buttons container */
+.mood-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.mood-button {
+  position: relative;
+  padding: 1.5rem 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 25px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transform: translateY(0);
+}
+
+.mood-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.8s ease;
+}
+
+.mood-button:hover::before {
+  transform: translateX(100%);
+}
+
+.mood-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mood-button:active {
+  transform: translateY(-2px);
+}
+
+/* Mood-specific button colors */
+.mood-button.happy:hover {
+  background: linear-gradient(45deg, rgba(255, 193, 7, 0.3), rgba(255, 87, 34, 0.3));
+  border-color: rgba(255, 193, 7, 0.6);
+  box-shadow: 0 15px 40px rgba(255, 193, 7, 0.3);
+}
+
+.mood-button.sad:hover {
+  background: linear-gradient(45deg, rgba(75, 75, 75, 0.3), rgba(50, 50, 70, 0.3));
+  border-color: rgba(75, 75, 75, 0.6);
+  box-shadow: 0 15px 40px rgba(75, 75, 75, 0.3);
+}
+
+.mood-button.energetic:hover {
+  background: linear-gradient(45deg, rgba(255, 94, 77, 0.3), rgba(255, 154, 0, 0.3));
+  border-color: rgba(255, 94, 77, 0.6);
+  box-shadow: 0 15px 40px rgba(255, 94, 77, 0.3);
+}
+
+.mood-button.relaxed:hover {
+  background: linear-gradient(45deg, rgba(103, 58, 183, 0.3), rgba(33, 150, 243, 0.3));
+  border-color: rgba(103, 58, 183, 0.6);
+  box-shadow: 0 15px 40px rgba(103, 58, 183, 0.3);
+}
+
+.mood-button.fun:hover {
+  background: linear-gradient(45deg, rgba(233, 30, 99, 0.3), rgba(156, 39, 176, 0.3));
+  border-color: rgba(233, 30, 99, 0.6);
+  box-shadow: 0 15px 40px rgba(233, 30, 99, 0.3);
+}
+
+.mood-button.angry:hover {
+  background: linear-gradient(45deg, rgba(244, 67, 54, 0.3), rgba(255, 87, 34, 0.3));
+  border-color: rgba(244, 67, 54, 0.6);
+  box-shadow: 0 15px 40px rgba(244, 67, 54, 0.3);
+}
+
+.mood-button.neutral:hover {
+  background: linear-gradient(45deg, rgba(158, 158, 158, 0.3), rgba(189, 189, 189, 0.3));
+  border-color: rgba(158, 158, 158, 0.6);
+  box-shadow: 0 15px 40px rgba(158, 158, 158, 0.3);
+}
+
+.mood-button.surprise:hover {
+  background: linear-gradient(45deg, rgba(76, 175, 80, 0.3), rgba(255, 193, 7, 0.3));
+  border-color: rgba(76, 175, 80, 0.6);
+  box-shadow: 0 15px 40px rgba(76, 175, 80, 0.3);
+}
+
+/* Player */
+.player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
+  background: transparent;
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transform: translateY(100%);
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 100;
+}
+
+.player.active {
+  transform: translateY(0);
+  border: none;
+}
+
+.audio-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.custom-audio-player {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 25px;
+  padding: 2rem;
+  border: none;
+  backdrop-filter: blur(10px);
+}
+
+.song-info {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.song-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.song-mood {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.control-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 1.4rem;
+  backdrop-filter: blur(5px);
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.progress-container {
+  flex: 1;
+  margin: 0 2rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  backdrop-filter: blur(5px);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+  border-radius: 4px;
+  width: 0%;
+  transition: width 0.1s ease;
+}
+
+.time-display {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.8rem;
+  font-weight: 500;
+}
+
+/* Back button */
+.back-btn {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 1.4rem;
+  backdrop-filter: blur(5px);
+  z-index: 102;
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.back-btn.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app {
+    padding: 1rem;
+  }
+  
+  .main-content {
+    padding: 2rem;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .mood-selector {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .mood-button {
+    padding: 1.2rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .player {
+    padding: 1.5rem;
+  }
+
+  .audio-controls {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .progress-container {
+    order: -1;
+    margin: 0;
+    width: 100%;
+  }
+  
+  .control-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mood-selector {
+    grid-template-columns: 1fr;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+}
+
+.webcam {
+  width: 400px;
+  border-radius: 12px;
+  margin-top: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.detection-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3rem;
+  z-index: 200;
+}
+
+.status {
+  font-size: 1.2rem;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.cancel-btn {
+  margin-top: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
